@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeriFarm - Agricultural Supply Chain</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🌱 VeriFarm</h1>
+            <p>Blockchain-based Agricultural Supply Chain Transparency</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Product Search -->
+        <section class="search-section">
+            <h2>Track Your Produce</h2>
+            <div class="search-box">
+                <input type="text" id="productId" placeholder="Enter Product ID (e.g., AGT001)" value="AGT001">
+                <button onclick="trackProduct()">Track Product</button>
+            </div>
+        </section>
+
+        <!-- Product Information -->
+        <section id="productInfo" class="product-info">
+            <h2>Product Details</h2>
+            <div class="product-card">
+                <div class="product-header">
+                    <h3 id="productName">Organic Tomatoes</h3>
+                    <span id="productStatus" class="status fresh">Fresh</span>
+                </div>
+                <div class="product-details">
+                    <div class="detail-item">
+                        <label>Product ID:</label>
+                        <span id="detailId">AGT001</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Farm Origin:</label>
+                        <span id="detailFarm">Green Valley Farms</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Harvest Date:</label>
+                        <span id="detailHarvest">2024-01-15</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Current Location:</label>
+                        <span id="detailLocation">Distribution Center</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Supply Chain Timeline -->
+        <section class="timeline-section">
+            <h2>Supply Chain Journey</h2>
+            <div class="timeline">
+                <div class="timeline-item completed">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h4>🌿 Harvesting</h4>
+                        <p><strong>Farm:</strong> Green Valley Farms</p>
+                        <p><strong>Date:</strong> 2024-01-15</p>
+                        <p><strong>Temperature:</strong> 22°C</p>
+                    </div>
+                </div>
+                <div class="timeline-item completed">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h4>❄️ Storage</h4>
+                        <p><strong>Location:</strong> Cold Storage Unit #5</p>
+                        <p><strong>Date:</strong> 2024-01-16</p>
+                        <p><strong>Temperature:</strong> 4°C</p>
+                    </div>
+                </div>
+                <div class="timeline-item current">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h4>🚚 Transport</h4>
+                        <p><strong>Status:</strong> In Transit to Retail</p>
+                        <p><strong>ETA:</strong> 2024-01-18</p>
+                        <p><strong>Current Temp:</strong> 6°C</p>
+                    </div>
+                </div>
+                <div class="timeline-item upcoming">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h4>🏪 Retail</h4>
+                        <p><strong>Location:</strong> Supermarket Shelf</p>
+                        <p><strong>Expected:</strong> 2024-01-19</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Add New Product -->
+        <section class="add-product-section">
+            <h2>Add New Product to Blockchain</h2>
+            <div class="form">
+                <input type="text" id="newProductName" placeholder="Product Name (e.g., Organic Apples)">
+                <input type="text" id="newFarm" placeholder="Farm Name">
+                <input type="date" id="newHarvestDate">
+                <button onclick="addProduct()">Add to Blockchain</button>
+            </div>
+        </section>
+
+        <!-- Analytics Dashboard -->
+        <section class="analytics-section">
+            <h2>Supply Chain Analytics</h2>
+            <div class="analytics-cards">
+                <div class="analytics-card waste-reduction">
+                    <h3>📊 Food Waste Reduction</h3>
+                    <p class="number">35%</p>
+                    <p>Improved through better tracking</p>
+                </div>
+                <div class="analytics-card carbon-footprint">
+                    <h3>🌍 Carbon Footprint</h3>
+                    <p class="number">280g</p>
+                    <p>CO2 per item</p>
+                </div>
+                <div class="analytics-card freshness">
+                    <h3>⭐ Freshness Score</h3>
+                    <p class="number">92%</p>
+                    <p>Average product quality</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>VeriFarm - Blockchain Agricultural Supply Chain Transparency System | Hackathon Project</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
