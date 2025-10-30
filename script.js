@@ -1,144 +1,62 @@
-// Simple blockchain simulation for agricultural supply chain
+// API configuration - Change this URL after deploying backend
+const API_BASE_URL = 'http://localhost:3001/api';
+
+// Updated AgriBlockchain class to use backend API
 class AgriBlockchain {
     constructor() {
         this.products = new Map();
-        this.initializeSampleData();
     }
 
-    initializeSampleData() {
-        const sampleProducts = {
-            'AGT001': {
-                id: 'AGT001',
-                name: 'Organic Tomatoes',
-                farm: 'Green Valley Farms',
-                harvestDate: '2024-01-15',
-                currentLocation: 'Distribution Center',
-                status: 'Fresh',
-                timeline: [
-                    {
-                        stage: 'Harvesting',
-                        location: 'Green Valley Farms',
-                        date: '2024-01-15',
-                        temperature: '22°C',
-                        status: 'completed'
-                    },
-                    {
-                        stage: 'Storage',
-                        location: 'Cold Storage Unit #5',
-                        date: '2024-01-16',
-                        temperature: '4°C',
-                        status: 'completed'
-                    },
-                    {
-                        stage: 'Transport',
-                        location: 'In Transit to Retail',
-                        date: '2024-01-18',
-                        temperature: '6°C',
-                        status: 'current'
-                    },
-                    {
-                        stage: 'Retail',
-                        location: 'Supermarket Shelf',
-                        date: '2024-01-19',
-                        temperature: '8°C',
-                        status: 'upcoming'
-                    }
-                ]
-            },
-            'AGT002': {
-                id: 'AGT002',
-                name: 'Fresh Carrots',
-                farm: 'Sunshine Farms',
-                harvestDate: '2024-01-10',
-                currentLocation: 'Retail Store',
-                status: 'Good',
-                timeline: [
-                    {
-                        stage: 'Harvesting',
-                        location: 'Sunshine Farms',
-                        date: '2024-01-10',
-                        temperature: '18°C',
-                        status: 'completed'
-                    },
-                    {
-                        stage: 'Storage',
-                        location: 'Warehouse A',
-                        date: '2024-01-11',
-                        temperature: '5°C',
-                        status: 'completed'
-                    },
-                    {
-                        stage: 'Transport',
-                        location: 'Delivery Truck',
-                        date: '2024-01-12',
-                        temperature: '7°C',
-                        status: 'completed'
-                    },
-                    {
-                        stage: 'Retail',
-                        location: 'Local Market',
-                        date: '2024-01-13',
-                        temperature: '10°C',
-                        status: 'current'
-                    }
-                ]
+    async initializeData() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/products`);
+            const products = await response.json();
+            
+            products.forEach(product => {
+                this.products.set(product.id, product);
+            });
+            
+            console.log('Data loaded from backend:', products.length, 'products');
+        } catch (error) {
+            console.error('Failed to load data from backend:', error);
+            // Fallback to empty state
+        }
+    }
+
+    async getProduct(productId) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/products/${productId}`);
+            if (response.ok) {
+                return await response.json();
             }
-        };
-
-        // Add sample products to blockchain
-        Object.values(sampleProducts).forEach(product => {
-            this.products.set(product.id, product);
-        });
+            return null;
+        } catch (error) {
+            console.error('Error fetching product:', error);
+            return null;
+        }
     }
 
-    addProduct(productData) {
-        const productId = 'AGT' + Math.random().toString(36).substr(2, 6).toUpperCase();
-        
-        const newProduct = {
-            id: productId,
-            name: productData.name,
-            farm: productData.farm,
-            harvestDate: productData.harvestDate,
-            currentLocation: 'Farm - Ready for Processing',
-            status: 'Fresh',
-            timeline: [
-                {
-                    stage: 'Harvesting',
-                    location: productData.farm,
-                    date: productData.harvestDate,
-                    temperature: '22°C',
-                    status: 'completed'
+    async addProduct(productData) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/products`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
                 },
-                {
-                    stage: 'Processing',
-                    location: 'Awaiting Processing',
-                    date: 'Pending',
-                    temperature: 'N/A',
-                    status: 'upcoming'
-                },
-                {
-                    stage: 'Storage',
-                    location: 'Pending',
-                    date: 'Pending',
-                    temperature: 'N/A',
-                    status: 'upcoming'
-                },
-                {
-                    stage: 'Retail',
-                    location: 'Pending',
-                    date: 'Pending',
-                    temperature: 'N/A',
-                    status: 'upcoming'
-                }
-            ]
-        };
-
-        this.products.set(productId, newProduct);
-        return productId;
-    }
-
-    getProduct(productId) {
-        return this.products.get(productId.toUpperCase());
+                body: JSON.stringify(productData)
+            });
+            
+            if (response.ok) {
+                const newProduct = await response.json();
+                this.products.set(newProduct.id, newProduct);
+                return newProduct.id;
+            } else {
+                throw new Error('Failed to add product');
+            }
+        } catch (error) {
+            console.error('Error adding product:', error);
+            throw error;
+        }
     }
 
     getAllProducts() {
@@ -150,7 +68,7 @@ class AgriBlockchain {
 const blockchain = new AgriBlockchain();
 
 // DOM Functions
-function trackProduct() {
+async function trackProduct() {
     const productId = document.getElementById('productId').value.trim();
     
     if (!productId) {
@@ -158,14 +76,18 @@ function trackProduct() {
         return;
     }
 
-    const product = blockchain.getProduct(productId);
-    
-    if (product) {
-        displayProductInfo(product);
-        displayTimeline(product.timeline);
-        showNotification(`Product ${productId} found!`, 'success');
-    } else {
-        showNotification('Product not found. Try AGT001 or AGT002', 'error');
+    try {
+        const product = await blockchain.getProduct(productId);
+        
+        if (product) {
+            displayProductInfo(product);
+            displayTimeline(product.timeline);
+            showNotification(`Product ${productId} found!`, 'success');
+        } else {
+            showNotification('Product not found. Try AGT001 or AGT002', 'error');
+        }
+    } catch (error) {
+        showNotification('Error connecting to server. Please try again.', 'error');
     }
 }
 
@@ -214,7 +136,7 @@ function getStageIcon(stage) {
     return icons[stage] || '📦';
 }
 
-function addProduct() {
+async function addProduct() {
     const name = document.getElementById('newProductName').value.trim();
     const farm = document.getElementById('newFarm').value.trim();
     const harvestDate = document.getElementById('newHarvestDate').value;
@@ -224,27 +146,29 @@ function addProduct() {
         return;
     }
 
-    const productData = {
-        name: name,
-        farm: farm,
-        harvestDate: harvestDate
-    };
-
-    const productId = blockchain.addProduct(productData);
-    
-    showNotification(`Product added to blockchain! ID: ${productId}`, 'success');
-    
-    // Clear form
-    document.getElementById('newProductName').value = '';
-    document.getElementById('newFarm').value = '';
-    document.getElementById('newHarvestDate').value = '';
-    
-    // Auto-fill the search with new product ID
-    document.getElementById('productId').value = productId;
+    try {
+        const productId = await blockchain.addProduct({
+            name: name,
+            farm: farm,
+            harvestDate: harvestDate
+        });
+        
+        showNotification(`Product added to blockchain! ID: ${productId}`, 'success');
+        
+        // Clear form
+        document.getElementById('newProductName').value = '';
+        document.getElementById('newFarm').value = '';
+        document.getElementById('newHarvestDate').value = '';
+        
+        // Auto-fill the search with new product ID
+        document.getElementById('productId').value = productId;
+        
+    } catch (error) {
+        showNotification('Failed to add product. Please try again.', 'error');
+    }
 }
 
 function showNotification(message, type) {
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     notification.textContent = message;
@@ -263,7 +187,6 @@ function showNotification(message, type) {
     
     document.body.appendChild(notification);
     
-    // Remove after 3 seconds
     setTimeout(() => {
         notification.remove();
     }, 3000);
@@ -287,9 +210,11 @@ document.getElementById('productId').addEventListener('keypress', function(e) {
 });
 
 // Initialize with sample data
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     console.log('VeriFarm Blockchain System Initialized');
-    console.log('Sample Product IDs: AGT001, AGT002');
+    
+    // Load data from backend
+    await blockchain.initializeData();
     
     // Auto-track sample product
     setTimeout(() => {
